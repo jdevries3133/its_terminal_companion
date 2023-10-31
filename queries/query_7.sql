@@ -1,0 +1,1 @@
+SELECT customers.customer_name, orders.order_id, products.product_name FROM customers INNER JOIN orders ON customers.customer_id = orders.customer_id INNER JOIN products ON orders.product_id = products.product_id WHERE customers.status = 'active' AND orders.order_date >= '2023-01-01'

@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Function to create random subdirectories
+create_haystack() {
+    local depth=$1
+    local max_depth=$2
+
+    if [ $depth -ge $max_depth ]; then
+        return
+    fi
+
+    # Create a random number of subdirectories (between 1 and 5)
+    local num_subdirs=$((RANDOM % 5 + 1))
+
+    for ((i=1; i<=num_subdirs; i++)); do
+        subdir="hay$((RANDOM % 100))"
+        mkdir "$subdir"
+        cd "$subdir"
+
+        # Recursive call to create subdirectories for this subdirectory
+        create_haystack $((depth + 1)) $max_depth
+
+        # Move back to the parent directory
+        cd ..
+    done
+}
+
+# Function to randomly place needles in existing directories
+place_needles() {
+    local num_needles=$1
+    local haystack_root=$2
+
+    # Find all existing directories in the haystack
+    local directories=()
+    while IFS= read -r -d '' dir; do
+        directories+=("$dir")
+    done < <(find "$haystack_root" -type d -print0)
+
+    # Randomly place needles in n existing directories
+    for ((i=1; i<=num_needles; i++)); do
+        rand_index=$((RANDOM % ${#directories[@]}))
+        rand_dir="${directories[$rand_index]}"
+        touch "$rand_dir/needle$i.txt"
+        unset "directories[$rand_index]"
+        directories=("${directories[@]}")
+    done
+
+    echo "$num_needles needle(s) randomly placed in the haystack."
+}
+
+# Main function
+main() {
+    local root_dir="haystack"
+    local max_depth=15
+    local num_needles=1
+
+    if [[ ! -z "$1" ]]
+    then
+        num_needles=$1
+    fi
+
+    # Create the root directory
+    rm -rf haystack
+    mkdir -p "$root_dir"
+    cd "$root_dir"
+
+    # Call the function to create the haystack
+    # Calling it a few times since Mr. Gippity thought a single `mkdir -p`
+    # was cool enough for me.
+    create_haystack 0 $max_depth
+    create_haystack 0 $max_depth
+    create_haystack 0 $max_depth
+    create_haystack 0 $max_depth
+
+    # Call the function to randomly place needles in existing directories
+    place_needles $num_needles "$(pwd)"
+}
+
+# Run the main function
+main $@
+

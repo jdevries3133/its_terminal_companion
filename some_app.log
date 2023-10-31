@@ -1,0 +1,14 @@
+User123,login,success
+User123,login,success
+User456,logout,success
+User123,logout,success
+User123,logout,success
+User113,login,success
+User113,logout,success
+User446,logout,success
+User446,login,success
+User789,login,failure
+User789,login,failure
+User789,login,failure
+User789,login,failure
+User456,login,success
